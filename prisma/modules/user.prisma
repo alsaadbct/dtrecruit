@@ -1,0 +1,4 @@
+model User {
+    userName  String @unique
+    sessionId String @default(uuid())
+}
