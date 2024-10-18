@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "dist",
@@ -10,6 +12,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "prisma/combineSchema.jshema.js"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "prisma/combineSchema.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,4 +1,5 @@
 model User {
-    userName  String @unique
-    sessionId String @default(uuid())
+    id       String   @id @default(cuid())
+    username String   @unique
+    session  Session? // Relation to sessions
 }
