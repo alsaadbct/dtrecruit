@@ -19,8 +19,6 @@ export const login = async (req: any, res: Response): Promise<Response> => {
         await createOrUpdateSession(newUser, sessionToken, expirationTime);
     }
     else {
-        sessionToken = req?.isSessionExpired ? sessionToken : userMatch.session?.token as string
-        expirationTime = req?.isSessionExpired ? expirationTime : userMatch.session?.expiresAt as Date
         await createOrUpdateSession(userMatch, sessionToken, expirationTime);
     }
     return res.status(200).json({ token: sessionToken });

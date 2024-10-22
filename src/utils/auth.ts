@@ -1,6 +1,7 @@
 import { prisma } from "./db";
 
 const SESSION_DURATION = 3600 * 1000; // 1 hour
+const LOGIN_PATH = '/auth/login';
 
 const createUser = async (username: string) => {
     const res = await prisma.user.create({
@@ -55,5 +56,6 @@ export {
     getSessionBasedOnToken,
     getUserWithSessionsById,
     getUserWithSessionsByUsername,
+    LOGIN_PATH,
     SESSION_DURATION,
 }
