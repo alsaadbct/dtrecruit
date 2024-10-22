@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import axios from "axios";
 
 const SESSION_DURATION = 3600 * 1000; // 1 hour
 const LOGIN_PATH = '/auth/login';
@@ -50,8 +51,21 @@ const getSessionBasedOnToken = async (token: string) => {
         }
     });
 };
+
+const authenticateWithAD = async (username: string, password: string) => {
+    const response = await axios.post(process.env.AD_URL as string, {
+        username,
+        password
+    });
+    if (response.status === 200) {
+        console.log(response.data);
+        return response.data;
+    }
+}
+
 export {
     createUser,
+    authenticateWithAD,
     createOrUpdateSession,
     getSessionBasedOnToken,
     getUserWithSessionsById,
