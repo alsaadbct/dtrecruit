@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult, check } from 'express-validator';
 import { prisma } from '../utils/db';
-import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserWithSessionsById, getUserWithSessionsByUsername, SESSION_DURATION } from '../utils/auth';
+import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserWithSessionsByEmail, getUserWithSessionsByInternalUserId, SESSION_DURATION } from '../utils/auth';
 import crypto from 'crypto';
 
 export const login = async (req: any, res: Response): Promise<Response> => {
@@ -12,16 +12,23 @@ export const login = async (req: any, res: Response): Promise<Response> => {
                 errors: errors.array(),
             })
         }
-        // const userData = await authenticateWithAD(req.username, req.password);
-        const userData = DUMMYADRESPONSE;
-        // if (!userData) {
-        //     return res.status(401).json('Authentication failed');
-        // }
-        const userMatch = await getUserWithSessionsById(req.body?.username, true);
+        let userMatch;
+        let internalUserData;
+        if (!req.body?.email) {
+            // const userData = await authenticateWithAD(req.username, req.password);
+            internalUserData = DUMMYADRESPONSE;
+            if (!internalUserData) {
+                return res.status(401).json('Authentication failed');
+            }
+            userMatch = await getUserWithSessionsByInternalUserId(internalUserData.userId, true)
+        }
+        else {
+            userMatch = await getUserWithSessionsByEmail(req.body?.email, true);
+        }
         let sessionToken = crypto.randomBytes(32).toString('hex');
         let expirationTime = new Date(Date.now() + SESSION_DURATION);
         if (!userMatch) {
-            const newUser = await createUser(userData);
+            const newUser = await createUser(req, internalUserData);
             await createOrUpdateSession(newUser, sessionToken, expirationTime);
         }
         else {
