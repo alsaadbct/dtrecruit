@@ -1,11 +1,12 @@
 model User {
-    id             String    @id @default(cuid())
-    internalUserId String    @unique
-    email          String    @unique
+    id             String       @id @default(cuid())
+    internalUserId String       @unique
+    email          String       @unique
     username       String
     isAdmin        Boolean
     isActive       Boolean
     userTypeId     Int
     session        Session? // Relation to sessions
-    userType       UserTypes @relation(fields: [userTypeId], references: [id]) // Relation to userType
+    userType       UserTypes    @relation(fields: [userTypeId], references: [id]) // Relation to userType
+    userDetails    UserDetails? // relation to user details
 }

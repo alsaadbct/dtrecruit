@@ -27,15 +27,26 @@ model Session {
 
 
 model User {
-    id             String    @id @default(cuid())
-    internalUserId String    @unique
-    email          String    @unique
+    id             String       @id @default(cuid())
+    internalUserId String       @unique
+    email          String       @unique
     username       String
     isAdmin        Boolean
     isActive       Boolean
     userTypeId     Int
     session        Session? // Relation to sessions
-    userType       UserTypes @relation(fields: [userTypeId], references: [id]) // Relation to userType
+    userType       UserTypes    @relation(fields: [userTypeId], references: [id]) // Relation to userType
+    userDetails    UserDetails? // relation to user details
+}
+
+
+model UserDetails {
+    id               String  @id @default(cuid())
+    userId           String  @unique
+    address          String?
+    mobileNo         String?
+    organizationName String?
+    user             User    @relation(fields: [userId], references: [id]) // Relation to the User model
 }
 
 
