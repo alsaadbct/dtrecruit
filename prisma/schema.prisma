@@ -1,11 +1,29 @@
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+
+model UserDetails {
+    id               String  @id @default(cuid())
+    userId           String  @unique
+    address          String?
+    mobileNo         String?
+    organizationName String?
+    user             User    @relation(fields: [userId], references: [id]) // Relation to the User model
+}
+
+
+model UserTypes {
+    id    Int    @id @default(autoincrement())
+    name  String
+    users User[]
 }
 
 
@@ -36,46 +54,4 @@ model User {
     session        Session? // Relation to sessions
     userType       UserTypes    @relation(fields: [userTypeId], references: [id]) // Relation to userType
     userDetails    UserDetails? // relation to user details
-}
-
-
-model UserDetails {
-  id               String  @id @default(cuid())
-  userId           String  @unique
-  address          String?
-  mobileNo         String?
-  organizationName String?
-  user             User    @relation(fields: [userId], references: [id])
-}
-
-model UserTypes {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
-}
-
-model Session {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deviceId  String?
-  email     String
-  username  String
-  user      User     @relation(fields: [userId], references: [id])
-}
-
-model User {
-  id             String       @id @default(cuid())
-  username       String
-  email          String       @unique
-  internalUserId String       @unique
-  isActive       Boolean      @default(false)
-  isAdmin        Boolean      @default(false)
-  userTypeId     Int
-  session        Session?
-  userType       UserTypes    @relation(fields: [userTypeId], references: [id])
-  userDetails    UserDetails?
 }

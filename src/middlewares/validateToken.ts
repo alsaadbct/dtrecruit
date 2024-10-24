@@ -4,11 +4,12 @@ import { getSessionBasedOnToken, LOGIN_PATH } from '../utils/auth';
 
 const validateToken = async (req: any, res: Response, next: NextFunction) => {
 
-    const token = req.headers['Authorization']?.split(' ')[1];
+    const token = req.headers['authorization']?.split(' ')[1];
     if (!token) {
         return res.status(401).json('Unauthorized, token missing');
     }
     const session = await getSessionBasedOnToken(token);
+
     if (!session) {
         return res.status(401).json('Invalid session');
     }
