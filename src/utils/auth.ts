@@ -4,36 +4,42 @@ import axios from "axios";
 const SESSION_DURATION = 3600 * 1000; // 1 hour
 const LOGIN_PATH = '/auth/login';
 
+
 const createUser = async (userData: any) => {
-    const res = await prisma.user.create({
-        data: {
-            internalUserId: userData.userId,
-            username: userData.username,
-            email: userData.email,
-            userTypeId: userData.roleId,
-        }
-    })
-    return res;
+    // const res = await prisma.user.create({
+    //         internalUserId: userData.userId,
+    //         username: userData.username,
+    //         email: userData.email,
+    //         userTypeId: userData.roleId,
+    //         isAdmin:  userData.isAdmin,
+    //         isActive : true,
+    //         userType : 1,
+    //         userDetails
+
+
+
+    // })
+    // return res;
 }
 
 const createOrUpdateSession = async (user: any, token: string, expiresAt: Date) => {
-    await prisma.session.upsert({
-        where: {
-            userId: user?.id ?? user?.session?.userId
-        },
-        create: {
-            userId: user.id,
-            deviceId: user?.deviceId,
-            email: user?.email,
-            username: user?.username,
-            token,
-            expiresAt
-        },
-        update: {
-            token,
-            expiresAt
-        }
-    });
+    // await prisma.session.upsert({
+    //     where: {
+    //         userId: user?.id ?? user?.session?.userId
+    //     },
+    //     create: {
+    //         userId: user.id,
+    //         deviceId: user?.deviceId,
+    //         email: user?.email,
+    //         username: user?.username,
+    //         token,
+    //         expiresAt
+    //     },
+    //     update: {
+    //         token,
+    //         expiresAt
+    //     }
+    // });
 };
 
 const getUserWithSessionsByUsername = async (username: string, session: boolean) => {

@@ -20,6 +20,7 @@ export const login = async (req: any, res: Response): Promise<Response> => {
         const userMatch = await getUserWithSessionsById(req.body?.username, true);
         let sessionToken = crypto.randomBytes(32).toString('hex');
         let expirationTime = new Date(Date.now() + SESSION_DURATION);
+        console.log("exo", expirationTime)
         if (!userMatch) {
             const newUser = await createUser(userData);
             await createOrUpdateSession(newUser, sessionToken, expirationTime);
