@@ -4,42 +4,36 @@ import axios from "axios";
 const SESSION_DURATION = 3600 * 1000; // 1 hour
 const LOGIN_PATH = '/auth/login';
 
-
-const createUser = async (userData: any) => {
-    // const res = await prisma.user.create({
-    //         internalUserId: userData.userId,
-    //         username: userData.username,
-    //         email: userData.email,
-    //         userTypeId: userData.roleId,
-    //         isAdmin:  userData.isAdmin,
-    //         isActive : true,
-    //         userType : 1,
-    //         userDetails
-
-
-
-    // })
-    // return res;
+const createUser = async (req: any, userData: any) => {
+    const res = await prisma.user.create({
+        data: {
+            internalUserId: userData?.userId,
+            username: userData?.username,
+            email: userData?.email,
+            userTypeId: userData?.roleId,
+        }
+    })
+    return res;
 }
 
 const createOrUpdateSession = async (user: any, token: string, expiresAt: Date) => {
-    // await prisma.session.upsert({
-    //     where: {
-    //         userId: user?.id ?? user?.session?.userId
-    //     },
-    //     create: {
-    //         userId: user.id,
-    //         deviceId: user?.deviceId,
-    //         email: user?.email,
-    //         username: user?.username,
-    //         token,
-    //         expiresAt
-    //     },
-    //     update: {
-    //         token,
-    //         expiresAt
-    //     }
-    // });
+    await prisma.session.upsert({
+        where: {
+            userId: user?.id ?? user?.session?.userId
+        },
+        create: {
+            userId: user.id,
+            deviceId: user.deviceId ?? `${user.id}-${user.email}`,
+            email: user?.email,
+            username: user?.username,
+            token,
+            expiresAt
+        },
+        update: {
+            token,
+            expiresAt
+        }
+    });
 };
 
 const getUserWithSessionsByUsername = async (username: string, session: boolean) => {
@@ -102,7 +96,7 @@ const DUMMYADRESPONSE = {
     "langId": "1",
     "employeeNo": "114082",
     "deviceId": "dOgTnuA22UM:APA91bFAweYUekWnwiK8YRiN_1EcCP46APle_-WnM_5FEn1MtEzG1nFapax9OCA2Zk8eY0MlANVyuZrvGUsxw1AzA8pWIODarUHvp5YYDhcIU9JCqXA2mOrXrXHUDUUgs_vK-QsfUw4X",
-    "roleId": "0",
+    "roleId": 1,
     "roleName": "Employee",
     "pageSize": "5"
 }
