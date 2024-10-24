@@ -14,7 +14,7 @@ model Session {
     id        String   @id @default(cuid())
     userId    String   @unique
     token     String   @unique
-    deviceId  String
+    deviceId  String?
     email     String
     username  String
     expiresAt DateTime
@@ -28,7 +28,7 @@ model Session {
 
 model User {
     id             String       @id @default(cuid())
-    internalUserId String       @unique
+    internalUserId String?      @unique
     email          String       @unique
     username       String
     isAdmin        Boolean      @default(false)
