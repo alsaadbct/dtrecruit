@@ -2,7 +2,7 @@ model Session {
     id        String   @id @default(cuid())
     userId    String   @unique
     token     String   @unique
-    deviceId  String
+    deviceId  String?
     email     String
     username  String
     expiresAt DateTime

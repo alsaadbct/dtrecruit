@@ -3,8 +3,8 @@ model User {
     internalUserId String       @unique
     email          String       @unique
     username       String
-    isAdmin        Boolean
-    isActive       Boolean
+    isAdmin        Boolean      @default(false)
+    isActive       Boolean      @default(false)
     userTypeId     Int
     session        Session? // Relation to sessions
     userType       UserTypes    @relation(fields: [userTypeId], references: [id]) // Relation to userType

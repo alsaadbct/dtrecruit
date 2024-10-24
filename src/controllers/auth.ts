@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult, check } from 'express-validator';
 import { prisma } from '../utils/db';
-import { authenticateWithAD, createOrUpdateSession, createUser, getUserWithSessionsByUsername, SESSION_DURATION } from '../utils/auth';
+import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserWithSessionsById, getUserWithSessionsByUsername, SESSION_DURATION } from '../utils/auth';
 import crypto from 'crypto';
 
 export const login = async (req: any, res: Response): Promise<Response> => {
@@ -13,14 +13,15 @@ export const login = async (req: any, res: Response): Promise<Response> => {
             })
         }
         // const userData = await authenticateWithAD(req.username, req.password);
+        const userData = DUMMYADRESPONSE;
         // if (!userData) {
         //     return res.status(401).json('Authentication failed');
         // }
-        const userMatch = await getUserWithSessionsByUsername(req.body?.username, true);
+        const userMatch = await getUserWithSessionsById(req.body?.username, true);
         let sessionToken = crypto.randomBytes(32).toString('hex');
         let expirationTime = new Date(Date.now() + SESSION_DURATION);
         if (!userMatch) {
-            const newUser = await createUser(req.body?.username);
+            const newUser = await createUser(userData);
             await createOrUpdateSession(newUser, sessionToken, expirationTime);
         }
         else {
