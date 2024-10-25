@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { authRouter } from './routes';
-import { userRouter } from './routes';
-import { validateToken } from './middlewares/validateToken';
+import { authRouter, userRouter, lookupRouter } from './routes';
 
 const apiRouter = Router();
 
 
 apiRouter.use('/auth', authRouter)
 apiRouter.use('/user', userRouter)
+apiRouter.use('/lookup', lookupRouter)
 
 
 export default apiRouter;
