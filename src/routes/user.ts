@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import { createUsers } from '../controllers/userManagement';
+import { createUsers, getAllUsers, updateUsers, deleteUser } from '../controllers/userManagement';
 import { validateToken } from '../middlewares/validateToken';
 import { userValidator } from '../middlewares/validation/formValidator';
 
 const router = Router();
 
-router.get('', validateToken, userValidator, createUsers)
-// router.get('/test', loginValidator, (req: any, res: any) => {
-//     return res.status(200).json({ test: 'hhh' });
-// })
-
+router.post('/createUsers', validateToken, userValidator, createUsers)
+router.get('/getAllUser', validateToken, userValidator, getAllUsers)
+router.delete('/deleteUser/:userId', validateToken, userValidator, deleteUser)
+router.put('/updateUser/:userId', validateToken, updateUsers)
 
 export default router;
