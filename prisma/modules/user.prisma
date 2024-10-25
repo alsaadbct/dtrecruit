@@ -7,7 +7,7 @@ model User {
     isAdmin        Boolean      @default(false)
     isActive       Boolean      @default(false)
     userTypeId     Int
-    session        Session? 
+    session        Session?
     userType       UserTypes    @relation(fields: [userTypeId], references: [id]) // Relation to userType
     userDetails    UserDetails?
 }
