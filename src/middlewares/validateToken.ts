@@ -3,14 +3,13 @@ import { prisma } from '../utils/db';
 import { getSessionBasedOnToken, LOGIN_PATH } from '../utils/auth';
 
 const validateToken = async (req: any, res: Response, next: NextFunction) => {
-    if (req.path === LOGIN_PATH) {
-        return next();
-    }
+
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) {
         return res.status(401).json('Unauthorized, token missing');
     }
     const session = await getSessionBasedOnToken(token);
+
     if (!session) {
         return res.status(401).json('Invalid session');
     }
