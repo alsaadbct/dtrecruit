@@ -4,5 +4,5 @@ model UserDetails {
     address          String?
     mobileNo         String?
     organizationName String?
-    user             User    @relation(fields: [userId], references: [id],onDelete: Cascade) // Relation to the User model
+    user             User    @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to the User model
 }
