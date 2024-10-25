@@ -10,5 +10,5 @@ model Session {
     updatedAt DateTime @updatedAt
 
     // Relation to User model
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [userId], references: [id],onDelete: Cascade)
 }
