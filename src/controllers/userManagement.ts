@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult, check, body } from 'express-validator';
 import { prisma } from '../utils/db';
-import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserWithSessionsById, getUserWithSessionsByUsername, SESSION_DURATION } from '../utils/auth';
+import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, SESSION_DURATION } from '../utils/auth';
 import get from 'lodash.get'
 
 export const createUsers = async (req: any, res: Response): Promise<Response> => {

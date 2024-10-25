@@ -1,44 +1,58 @@
 import { Request, Response } from 'express';
 import { validationResult, check } from 'express-validator';
-import { prisma } from '../utils/db';
-import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserWithSessionsByEmail, getUserWithSessionsByInternalUserId, SESSION_DURATION } from '../utils/auth';
+import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, getUserByEmail, getUserByEmailAndPassword, getUserByInternalUserId, SESSION_DURATION } from '../utils/auth';
 import crypto from 'crypto';
+import { sendError, sendResponse } from '../utils/helper';
 
 export const login = async (req: any, res: Response): Promise<Response> => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array(),
-            })
+            return sendError(res, 400, 'Form Invalid.', errors.array());
         }
         let userMatch;
         let internalUserData;
+        let isExternalUser = false;
         if (!req.body?.email) {
+            /* this code will not be used because there is no difference in login as of now 
+            below code was to register a new internal user , since the admin is adding those user login controller need not required to do it.
+            */
             // const userData = await authenticateWithAD(req.username, req.password);
             internalUserData = DUMMYADRESPONSE;
             if (!internalUserData) {
-                return res.status(401).json('Authentication failed');
+                return sendError(res, 401, 'Authentication failed.');
             }
-            userMatch = await getUserWithSessionsByInternalUserId(internalUserData.userId, true)
+            userMatch = await getUserByInternalUserId(internalUserData.userId, true, true)
         }
         else {
-            userMatch = await getUserWithSessionsByEmail(req.body?.email, true);
+            //external & all users who is already added by admin
+            //isExternalUser = true;
+            userMatch = await getUserByEmailAndPassword(req?.body, true, true);
+            if (userMatch?.session) {
+                userMatch.session.deviceId = req?.body?.deviceId
+            }
         }
         let sessionToken = crypto.randomBytes(32).toString('hex');
         let expirationTime = new Date(Date.now() + SESSION_DURATION);
-        console.log("exo", expirationTime)
         if (!userMatch) {
-            const newUser = await createUser(req, internalUserData);
-            await createOrUpdateSession(newUser, sessionToken, expirationTime);
+            // if (isExternalUser) {
+            //     return sendError(res, 401, 'Invalid username or password.');
+            // }
+            // const newUser = await createUser(req, internalUserData);
+            // let newUserData = {
+            //     ...newUser,
+            //     deviceId: internalUserData?.deviceId,
+            // }
+            // userMatch = await createOrUpdateSession(newUserData, sessionToken, expirationTime);
+            return sendError(res, 401, 'Authentication failed, Please check verify credentials', 'For more info contact Admin.');
         }
         else {
             await createOrUpdateSession(userMatch, sessionToken, expirationTime);
         }
-        return res.status(200).json({ token: sessionToken });
+        return sendResponse(res, 200, userMatch)
     }
     catch (err) {
         console.error('Error at login', err);
-        return res.status(500).json('Failed at login');
+        return sendError(res, 500, 'Failed at login')
     }
 }
