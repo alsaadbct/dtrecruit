@@ -14,7 +14,7 @@ export const lookup = async (req: any, res: Response): Promise<Response> => {
         if (!validLookupModels.includes(entity)) {
             return sendError(res, 400, `Model ${entity} does not exist.`);
         }
-        const model = prisma[entity as ModelName] as unknown as { findMany: FindManyFunction };
+        const model = prisma[entity as any] as unknown as { findMany: FindManyFunction };
         const data = await model.findMany();
         return sendResponse(res, 200, data);
     }

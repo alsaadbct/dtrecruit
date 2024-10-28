@@ -6,6 +6,7 @@ import get from 'lodash.get'
 
 export const createUsers = async (req: any, res: Response): Promise<Response> => {
     try {
+        console.log("sfsf")
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(400).json({
