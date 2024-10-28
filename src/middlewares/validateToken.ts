@@ -6,6 +6,7 @@ const validateToken = async (req: any, res: Response, next: NextFunction) => {
 
     try {
         const token = req.headers['authorization']?.split(' ')[1];
+
         if (!token) {
             return sendError(res, 401, 'Unauthorized, token missing')
         }
@@ -17,7 +18,10 @@ const validateToken = async (req: any, res: Response, next: NextFunction) => {
         if (session && session.expiresAt < new Date()) {
             return sendError(res, 401, 'Session expired');
         }
+        req.user
+        next()
     } catch (error) {
+
         return sendError(res, 401, 'Unauthorized, token missing')
     }
 }
