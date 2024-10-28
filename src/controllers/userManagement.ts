@@ -3,15 +3,14 @@ import { validationResult, check, body } from 'express-validator';
 import { prisma } from '../utils/db';
 import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE, SESSION_DURATION } from '../utils/auth';
 import get from 'lodash.get'
+import { DEFAULT_PASSWORD } from '../utils/constants';
+import { sendError, sendResponse } from '../utils/helper';
 
 export const createUsers = async (req: any, res: Response): Promise<Response> => {
     try {
-        console.log("sfsf")
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array(),
-            })
+            return sendError(res, 400, 'Form Invalid.', errors.array());
         }
 
         let { userData } = req.body
@@ -27,7 +26,7 @@ export const createUsers = async (req: any, res: Response): Promise<Response> =>
 
 
         if (get(precheck, 'email', 0) != 0 || get(precheck, "internalUserId", 0) != 0) {
-            return res.status(500).json({ msg: "Email already exist" });
+            return sendResponse(res, 409, "Email already exist");
         }
 
         const userInfo = userData.map((itm: any) => {
@@ -38,6 +37,7 @@ export const createUsers = async (req: any, res: Response): Promise<Response> =>
                 //internalUserId: internalUserId,
                 email,
                 username,
+                password: DEFAULT_PASSWORD,
                 isAdmin: false
             }
         })
@@ -61,14 +61,15 @@ export const createUsers = async (req: any, res: Response): Promise<Response> =>
         })
 
         userData = userData.map((itm: any) => {
-            const { username, email, internalUserId = "", userTypeId, address = "", mobileNo = "", organizationName = "" } = itm
+            const { username, email, internalUserId = "", userTypeId, address = "", mobileNo = "", organizationName = "", roundTypeId } = itm
             // console.log("data ", organizationName, username, email, internalUserId, address, mobileNo)
             return {
                 address: address,
                 userId: itm.id,
                 //internalUserId: internalUserId,
                 mobileNo: mobileNo,
-                organizationName
+                organizationName,
+                roundTypeId
             }
         })
 
@@ -77,11 +78,11 @@ export const createUsers = async (req: any, res: Response): Promise<Response> =>
         })
         console.log("responseForUserDetails", responseForUserDetails)
 
-        return res.status(200).json({ data: "user created successfully" });
+        return sendResponse(res, 200, responseForUserDetails, "user created successfully");
     }
-    catch (err) {
-        console.error('Error at login', err);
-        return res.status(500).json(err);
+    catch (err: any) {
+        console.error('Error at user Management', err);
+        return sendError(res, 500, 'Failed to create', err);
     }
 }
 
@@ -93,48 +94,33 @@ export const getAllUsers = async (req: any, res: Response): Promise<Response> =>
             where: { isAdmin: false },
             include: { userDetails: true, userType: true }
         })
-        return res.status(200).json({ data: data });
+        return sendResponse(res, 200, data);
     }
-    catch (err) {
-        console.error('Error at login', err);
-        return res.status(500).json(err);
+    catch (err: any) {
+        console.error('Error at user Management', err);
+        return sendError(res, 500, 'Failed to fetch', err);
     }
 }
 
 export const updateUsers = async (req: any, res: Response): Promise<Response> => {
     try {
-
-
-
         const user_id = get(req, 'params.userId', '')
-
         if (user_id == "") throw Error("user is required")
-
-        const { address, mobileNo, organizationName } = req.body
-
-
-
-
-
+        const { address, mobileNo, organizationName, roundTypeId } = req.body
         const response = await prisma.userDetails.update({
             where: { userId: user_id },
             data: {
                 ...(address ? { address } : {}),
                 ...(mobileNo ? { mobileNo } : {}),
                 ...(organizationName ? { organizationName } : {}),
+                ...(roundTypeId ? { roundTypeId } : {}),
             }
         })
-
-
-        return res.status(200).json({ msg: "successfully updated record.", data: response })
-
-
-
-
+        return sendResponse(res, 200, response)
     }
-    catch (err) {
-        console.error('Error at login', err);
-        return res.status(500).json({ msg: "Failed to update ", data: {} });
+    catch (err: any) {
+        console.error('Error at user Management', err);
+        return sendError(res, 500, "Failed to update.", err);
     }
 }
 
@@ -147,11 +133,11 @@ export const deleteUser = async (req: any, res: Response): Promise<Response> => 
             where: { id: user_id }
         })
         console.log(apiRep)
-        return res.status(200).json({ data: { apiRep } });
+        return sendResponse(res, 200, apiRep, 'Deleted Successfully.');
     }
-    catch (err) {
-        console.error('Error at login', err);
-        return res.status(500).json(err);
+    catch (err: any) {
+        console.error('Error at user Management', err);
+        return sendError(res, 500, "Failed to delete.", err);
     }
 }
 
