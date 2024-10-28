@@ -1,3 +1,4 @@
+import { DEFAULT_PASSWORD } from "./constants";
 import { prisma } from "./db";
 import axios from "axios";
 
@@ -9,6 +10,7 @@ const createUser = async (req: any, userData: any) => {
         data: {
             internalUserId: userData?.userId,
             username: userData?.username,
+            password: DEFAULT_PASSWORD,
             email: userData?.email,
             userTypeId: userData?.roleId,
         }
