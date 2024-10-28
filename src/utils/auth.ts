@@ -95,10 +95,10 @@ const getUserByEmail = async (email: string, session: boolean, userDetails: bool
 };
 
 
-const getUserByEmailAndPassword = async (user: any, session: boolean, userDetails: boolean) => {
+const getUserByEmailAndPassword = async (user: any, session: boolean, userDetails: boolean, userType: boolean) => {
     return await prisma.user.findUnique({
         where: { email: user.email, password: user.password },
-        include: { session, userDetails, }
+        include: { session, userDetails, userType }
     });
 };
 
