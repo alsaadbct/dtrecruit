@@ -34,14 +34,6 @@ const sendEmail = async (to: [String], subject: string, template: any, context: 
     }
 
 
-    // Send email options using the transporter
-    transporter.sendMail(mailOptions, function (err: any, info: any) {
-        if (err) {
-            console.log('Error: ', err)
-        } else {
-            console.log('Message sent successfully!')
-        }
-    })
     transporter.sendMail(mailOptions, function (err: any, info: any) {
         if (err) {
             console.log('Error: ', err)
