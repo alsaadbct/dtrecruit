@@ -27,7 +27,7 @@ export const login = async (req: any, res: Response): Promise<Response> => {
         else {
             //external & all users who is already added by admin
             //isExternalUser = true;
-            userMatch = await getUserByEmailAndPassword(req?.body, true, true);
+            userMatch = await getUserByEmailAndPassword(req?.body, true, true, true);
             if (userMatch?.session) {
                 userMatch.session.deviceId = req?.body?.deviceId
             }
@@ -53,6 +53,6 @@ export const login = async (req: any, res: Response): Promise<Response> => {
     }
     catch (err) {
         console.error('Error at login', err);
-        return sendError(res, 500, 'Failed at login')
+        return sendError(res, 500, 'Failed to login')
     }
 }
