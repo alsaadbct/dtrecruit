@@ -8,19 +8,22 @@ async function main() {
     // Create user types
     const pmoType = await prisma.userTypes.create({
         data: {
-            name: 'PMO',
+            code: '1',
+            value: 'PMO',
         },
     });
 
     const RecuiterType = await prisma.userTypes.create({
         data: {
-            name: 'Recuiter',
+            code: '2',
+            value: 'Recuiter',
         },
     });
 
     const adminType = await prisma.userTypes.create({
         data: {
-            name: 'Admin',
+            code: '3',
+            value: 'Admin',
         },
     });
 
@@ -29,6 +32,7 @@ async function main() {
         data: {
             email: 'vipin@bawancybertek.com',
             username: 'vipinv',
+            password: 'dtRecruit123',
             isAdmin: true,
             isActive: true,
             userTypeId: adminType.id,
@@ -36,7 +40,7 @@ async function main() {
                 create: {
                     mobileNo: "9734324",
                     address: 'Bahwancybertek banglore office ',
-                    organizationName: "Bct"
+                    organizationName: "Bct",
                 },
 
             },

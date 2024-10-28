@@ -1,5 +1,6 @@
 model UserTypes {
     id    Int    @id @default(autoincrement())
-    name  String
+    code  String
+    value String
     users User[]
 }

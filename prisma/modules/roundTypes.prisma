@@ -1,0 +1,6 @@
+model RoundTypes {
+    id          Int           @id @default(autoincrement())
+    code        String
+    value       String
+    userDetails UserDetails[]
+}

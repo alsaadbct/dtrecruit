@@ -2,12 +2,11 @@ import { Response } from 'express';
 import { sendError, sendResponse } from '../utils/helper';
 import { prisma } from '../utils/db';
 import { validLookupModels } from '../utils/constants';
+import { Prisma } from '@prisma/client';
 
 type ModelName = typeof validLookupModels[number];
 
-function isModelWithFindMany(model: any): model is { findMany: Function } {
-    return typeof model?.findMany === 'function';
-}
+type FindManyFunction = (args?: Prisma.SelectSubset<any, any>) => Promise<any[]>;
 
 export const lookup = async (req: any, res: Response): Promise<Response> => {
     try {
@@ -15,15 +14,12 @@ export const lookup = async (req: any, res: Response): Promise<Response> => {
         if (!validLookupModels.includes(entity)) {
             return sendError(res, 400, `Model ${entity} does not exist.`);
         }
-        const model = prisma[entity as ModelName];
-        if (!isModelWithFindMany(model)) {
-            return sendError(res, 400, `Model ${entity} does not support findMany operation.`);
-        }
+        const model = prisma[entity as ModelName] as unknown as { findMany: FindManyFunction };
         const data = await model.findMany();
-        return sendResponse(res, 200, data)
+        return sendResponse(res, 200, data);
     }
     catch (err) {
-        console.error('Error at login', err);
+        console.error('Error at lookup', err);
         return sendError(res, 500, 'Failed at lookup')
     }
 }
