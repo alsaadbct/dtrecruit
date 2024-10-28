@@ -13,13 +13,17 @@ const validateToken = async (req: any, res: Response, next: NextFunction) => {
         const session = await getSessionBasedOnToken(token);
 
         if (!session) {
+            console.log("sdfsf", session)
             return sendError(res, 401, 'Invalid session');
         }
         if (session && session.expiresAt < new Date()) {
+            console.log("sdfsf", session)
             return sendError(res, 401, 'Session expired');
         }
-        req.user
-        next()
+
+        req.user = session?.userId;
+
+        next();
     } catch (error) {
 
         return sendError(res, 401, 'Unauthorized, token missing')
