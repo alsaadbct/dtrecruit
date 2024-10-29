@@ -47,7 +47,8 @@ export const login = async (req: any, res: Response): Promise<Response> => {
             return sendError(res, 401, 'Authentication failed, Please check verify credentials', 'For more info contact Admin.');
         }
         else {
-            await createOrUpdateSession(userMatch, sessionToken, expirationTime);
+            const newSession = await createOrUpdateSession(userMatch, sessionToken, expirationTime);
+            userMatch.session = newSession
         }
         return sendResponse(res, 200, userMatch)
     }
