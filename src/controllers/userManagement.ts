@@ -5,6 +5,7 @@ import { authenticateWithAD, createOrUpdateSession, createUser, DUMMYADRESPONSE,
 import get from 'lodash.get'
 import { DEFAULT_PASSWORD } from '../utils/constants';
 import { sendError, sendResponse } from '../utils/helper';
+import { sendEmail } from '../utils/email';
 
 export const createUsers = async (req: any, res: Response): Promise<Response> => {
     try {
@@ -76,6 +77,13 @@ export const createUsers = async (req: any, res: Response): Promise<Response> =>
         const responseForUserDetails = await prisma.userDetails.createMany({
             data: userData
         })
+
+        // sending email to vendor 
+        console.log(userInfo)
+        if (get(userInfo, 'length', 0) != 0) {
+            const emailIds = userInfo.map((item: any) => item.email)
+            sendEmail(emailIds, 'Welcome! Please reset your password.', 'welcomeMessage', { accessCode: '123456' })
+        }
         console.log("responseForUserDetails", responseForUserDetails)
 
         return sendResponse(res, 200, responseForUserDetails, "user created successfully");
@@ -140,4 +148,35 @@ export const deleteUser = async (req: any, res: Response): Promise<Response> => 
         return sendError(res, 500, "Failed to delete.", err);
     }
 }
+
+export const assignPassword = async (req: any, res: Response): Promise<Response> => {
+    try {
+        const { password } = req.body
+
+        const user_id = get(req, 'params.userId', '')
+        if (user_id == "") throw Error("user is required")
+        const apiRep = await prisma.user.count({
+            where: { id: user_id, password: DEFAULT_PASSWORD }
+        })
+        //check if password is default only
+        console.log("apit", apiRep)
+        if (apiRep == 0) {
+
+            sendResponse(res, 500, apiRep, 'Failed to update.');
+        }
+
+        const apiRepUpdate = await prisma.user.update({
+            data: { password, isActive: true },
+            where: { id: user_id },
+            select: { email: true, isActive: true, username: true }
+        })
+        console.log(apiRepUpdate)
+        return sendResponse(res, 200, apiRepUpdate, 'Updated Successfully.');
+    }
+    catch (err: any) {
+        console.error('Error at user Management', err);
+        return sendError(res, 500, "Failed to delete.", err);
+    }
+}
+
 
