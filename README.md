@@ -1,5 +1,3 @@
-Certainly! Here is the `README.md` content in Markdown format:
-
 ```markdown
 # DTRecruit
 
